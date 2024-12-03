@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <cstring> // For strcmp
+#include <cstring>
+#include <omp.h>
 #include "./include/mnist_loader.hpp"
 #include "./include/neural_network.hpp"
 #include "./include/loss.hpp"
@@ -9,6 +10,11 @@
 #include "./include/utils.hpp"
 
 int main(int argc, char* argv[]) {
+    // Set the number of threads to the number of available cores
+    int num_threads = omp_get_max_threads();
+    omp_set_num_threads(num_threads);
+    std::cout << "Using " << num_threads << " OpenMP threads." << std::endl;
+
     try {
         // Check for mode argument
         if (argc < 2) {
@@ -60,11 +66,15 @@ int main(int argc, char* argv[]) {
         // Define the neural network architecture
         std::cout << "Initializing neural network..." << std::endl;
         NeuralNetwork model;
-        model.add_layer(new DenseLayer(784, 128));  // Input to Hidden Layer
+        model.add_layer(new DenseLayer(784, 512));  // Input to Hidden Layer
         model.add_layer(new ActivationLayer("relu"));  // Activation Function
-        model.add_layer(new DenseLayer(128, 64));   // Hidden Layer
+        model.add_layer(new DenseLayer(512, 512));   // Hidden Layer
         model.add_layer(new ActivationLayer("relu"));  // Activation Function
-        model.add_layer(new DenseLayer(64, 10));    // Hidden to Output Layer
+        model.add_layer(new DenseLayer(512, 512));   // Hidden Layer
+        model.add_layer(new ActivationLayer("relu"));  // Activation Function
+        model.add_layer(new DenseLayer(512, 512));   // Hidden Layer
+        model.add_layer(new ActivationLayer("relu"));  // Activation Function
+        model.add_layer(new DenseLayer(512, 10));    // Hidden to Output Layer
         model.add_layer(new ActivationLayer("softmax"));  // Softmax Activation
 
         if (is_evaluate_mode) {

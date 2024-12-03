@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <algorithm>
+#include <omp.h>
 
 // DenseLayer constructor
 DenseLayer::DenseLayer(int input_size, int output_size) {
@@ -26,6 +27,7 @@ std::vector<std::vector<float>> DenseLayer::forward(const std::vector<std::vecto
     this->inputs = inputs; // Cache inputs for backpropagation
     std::vector<std::vector<float>> outputs(inputs.size(), std::vector<float>(biases.size(), 0.0f));
 
+    #pragma omp parallel for collapse(2) schedule(static)
     for (size_t i = 0; i < inputs.size(); ++i) {
         for (size_t j = 0; j < biases.size(); ++j) {
             outputs[i][j] = biases[j];
@@ -49,6 +51,7 @@ std::vector<std::vector<float>> DenseLayer::backward(const std::vector<std::vect
     bias_gradients.assign(output_size, 0.0f);
     std::vector<std::vector<float>> input_gradients(batch_size, std::vector<float>(input_size, 0.0f));
 
+    #pragma omp parallel for collapse(2) schedule(static)
     // Calculate weight and bias gradients
     for (size_t i = 0; i < batch_size; ++i) {
         for (size_t j = 0; j < output_size; ++j) {
@@ -60,12 +63,15 @@ std::vector<std::vector<float>> DenseLayer::backward(const std::vector<std::vect
         }
     }
 
+    #pragma omp parallel for schedule(static)
     // Average gradients over the batch
     for (auto& row : weight_gradients) {
         for (auto& val : row) {
             val /= static_cast<float>(batch_size);
         }
     }
+
+    #pragma omp parallel for schedule(static)
     for (auto& val : bias_gradients) {
         val /= static_cast<float>(batch_size);
     }
@@ -88,23 +94,34 @@ std::vector<std::vector<float>> ActivationLayer::forward(const std::vector<std::
     std::vector<std::vector<float>> outputs = inputs;
 
     if (activation_type == "relu") {
-        for (auto& row : outputs) {
-            for (auto& val : row) {
-                val = std::max(0.0f, val); // ReLU: max(0, x)
+        // Parallelize ReLU activation using traditional for loops
+        #pragma omp parallel for schedule(static)
+        for (size_t i = 0; i < outputs.size(); ++i) {
+            for (size_t j = 0; j < outputs[i].size(); ++j) {
+                outputs[i][j] = std::max(0.0f, outputs[i][j]); // ReLU: max(0, x)
             }
         }
-    } else if (activation_type == "softmax") {
-        for (auto& row : outputs) {
-            float max_val = *std::max_element(row.begin(), row.end());
+    }
+    else if (activation_type == "softmax") {
+        // Parallelize Softmax activation per row
+        #pragma omp parallel for schedule(static)
+        for (size_t i = 0; i < outputs.size(); ++i) {
+            float max_val = *std::max_element(outputs[i].begin(), outputs[i].end());
             float sum_exp = 0.0f;
-            for (float val : row) {
-                sum_exp += std::exp(val - max_val); // For numerical stability
+
+            // Compute sum of exponentials
+            for (size_t j = 0; j < outputs[i].size(); ++j) {
+                outputs[i][j] = std::exp(outputs[i][j] - max_val); // For numerical stability
+                sum_exp += outputs[i][j];
             }
-            for (float& val : row) {
-                val = std::exp(val - max_val) / sum_exp; // Softmax formula
+
+            // Normalize to get probabilities
+            for (size_t j = 0; j < outputs[i].size(); ++j) {
+                outputs[i][j] /= sum_exp; // Softmax formula
             }
         }
-    } else {
+    }
+    else {
         throw std::invalid_argument("Unsupported activation type: " + activation_type);
     }
 
@@ -115,6 +132,8 @@ std::vector<std::vector<float>> ActivationLayer::backward(const std::vector<std:
     std::vector<std::vector<float>> input_gradients = gradient;
 
     if (activation_type == "relu") {
+        // Parallelize the ReLU backward pass using traditional for loops
+        #pragma omp parallel for schedule(static)
         for (size_t i = 0; i < inputs.size(); ++i) {
             for (size_t j = 0; j < inputs[i].size(); ++j) {
                 input_gradients[i][j] *= (inputs[i][j] > 0) ? 1.0f : 0.0f; // Gradient of ReLU

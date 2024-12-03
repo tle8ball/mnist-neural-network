@@ -1,7 +1,9 @@
 # C++ MNIST Neural Network
 
 A simple C++ neural network for classifying MNIST digits, featuring custom layers, activation functions, and model saving/loading.
-Test Accuracy Achieved by Neural Network: 87.95%
+Test Accuracy Achieved by Neural Network: 97.17%
+
+![alt text](image.png)
 
 ## Features
 
@@ -32,7 +34,7 @@ Test Accuracy Achieved by Neural Network: 87.95%
 
 2. **Compile the Program:**
    ```bash
-   g++ -Wall main.cpp src/*.cpp -o mnist_nn
+   g++ -Wall -std=c++11 -fopenmp -O3 main.cpp src/layers.cpp src/loss.cpp src/optimizer.cpp src/mnist_loader.cpp src/neural_network.cpp src/utils.cpp -o mnist_nn.exe
    ```
 
 ## Usage
@@ -55,3 +57,12 @@ Run the program in one of the following modes:
   ```bash
   ./mnist_nn.exe inference
   ```
+
+## Performance
+
+- Multithreading: The program is optimized to run multithreaded on the CPU using OpenMP, effectively utilizing multiple cores to accelerate training and inference.
+- Accuracy: Achieves an accuracy of 97.17% on the MNIST test dataset, demonstrating its effectiveness in digit classification tasks.
+
+**CPU Utilization:**
+
+- During training and evaluation, multiple CPU cores are actively utilized, leading to faster computation times compared to single-threaded implementations.
