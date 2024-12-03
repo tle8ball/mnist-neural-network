@@ -1,3 +1,0 @@
-C:/Users/amitp/OneDrive/Desktop/Projects/mnist-neural-network/build/CMakeFiles/mnist_nn.dir
-C:/Users/amitp/OneDrive/Desktop/Projects/mnist-neural-network/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/amitp/OneDrive/Desktop/Projects/mnist-neural-network/build/CMakeFiles/ZERO_CHECK.dir

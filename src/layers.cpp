@@ -120,13 +120,11 @@ std::vector<std::vector<float>> ActivationLayer::backward(const std::vector<std:
                 input_gradients[i][j] *= (inputs[i][j] > 0) ? 1.0f : 0.0f; // Gradient of ReLU
             }
         }
-    } else if (activation_type == "softmax") {
-        for (size_t i = 0; i < inputs.size(); ++i) {
-            for (size_t j = 0; j < inputs[i].size(); ++j) {
-                input_gradients[i][j] *= inputs[i][j] * (1.0f - inputs[i][j]); // Gradient of Softmax
-            }
-        }
-    } else {
+    }
+    else if (activation_type == "softmax") {
+        // Do not modify gradients; already handled by CrossEntropyLoss
+    }
+    else {
         throw std::invalid_argument("Unsupported activation type: " + activation_type);
     }
 
