@@ -1,6 +1,7 @@
 # C++ MNIST Neural Network
 
 A simple C++ neural network for classifying MNIST digits, featuring custom layers, activation functions, and model saving/loading.
+
 Test Accuracy Achieved by Neural Network: 97.17%
 
 ![alt text](image.png)

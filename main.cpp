@@ -66,15 +66,15 @@ int main(int argc, char* argv[]) {
         // Define the neural network architecture
         std::cout << "Initializing neural network..." << std::endl;
         NeuralNetwork model;
-        model.add_layer(new DenseLayer(784, 512));  // Input to Hidden Layer
+        model.add_layer(new DenseLayer(784, 1024));  // Input to Hidden Layer
         model.add_layer(new ActivationLayer("relu"));  // Activation Function
-        model.add_layer(new DenseLayer(512, 512));   // Hidden Layer
+        model.add_layer(new DenseLayer(1024, 1024));   // Hidden Layer
         model.add_layer(new ActivationLayer("relu"));  // Activation Function
-        model.add_layer(new DenseLayer(512, 512));   // Hidden Layer
+        model.add_layer(new DenseLayer(1024, 1024));   // Hidden Layer
         model.add_layer(new ActivationLayer("relu"));  // Activation Function
-        model.add_layer(new DenseLayer(512, 512));   // Hidden Layer
+        model.add_layer(new DenseLayer(1024, 1024));   // Hidden Layer
         model.add_layer(new ActivationLayer("relu"));  // Activation Function
-        model.add_layer(new DenseLayer(512, 10));    // Hidden to Output Layer
+        model.add_layer(new DenseLayer(1024, 10));    // Hidden to Output Layer
         model.add_layer(new ActivationLayer("softmax"));  // Softmax Activation
 
         if (is_evaluate_mode) {
@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) {
             CrossEntropyLoss loss_function;
 
             // Optimizer
-            SGDOptimizer optimizer(0.01);  // Learning rate = 0.01
+            SGDOptimizer optimizer(0.1);  // Learning rate = 0.1
 
             // Training parameters
             const int epochs = 10;
