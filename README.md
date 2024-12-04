@@ -2,7 +2,7 @@
 
 A simple C++ neural network for classifying MNIST digits, featuring custom layers, activation functions, and model saving/loading.
 
-Test Accuracy Achieved by Neural Network: 97.17%
+Test Accuracy Achieved by Neural Network: 98.15%
 
 ![alt text](image.png)
 
@@ -62,7 +62,7 @@ Run the program in one of the following modes:
 ## Performance
 
 - Multithreading: The program is optimized to run multithreaded on the CPU using OpenMP, effectively utilizing multiple cores to accelerate training and inference.
-- Accuracy: Achieves an accuracy of 97.17% on the MNIST test dataset, demonstrating its effectiveness in digit classification tasks.
+- Accuracy: Achieves an accuracy of 98.15% on the MNIST test dataset, demonstrating its effectiveness in digit classification tasks.
 
 **CPU Utilization:**
 
